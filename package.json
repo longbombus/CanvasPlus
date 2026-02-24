@@ -1,0 +1,13 @@
+{
+  "name": "com.longbombus.canvasplus",
+  "displayName": "Canvas Plus",
+  "version": "0.0.1",
+  "description": "Helpfull extensions for Unity UI",
+  "keywords": [
+    "ui",
+    "canvas",
+    "ugui"
+  ],
+  "license": "MIT",
+  "category": "Utilities"
+}
