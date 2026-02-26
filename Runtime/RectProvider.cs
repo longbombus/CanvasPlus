@@ -27,36 +27,39 @@ namespace CanvasPlus
 				RectCorner.BottomRight.DecodeValue(m_Radius),
 				RectCorner.BottomLeft.DecodeValue(m_Radius)
 			);
+			var radiusNormalizer = new float4(1);
 
 			// T, R, B, L
 			var sideRadius = radius + radius.yzwx;
 			if (sideRadius.x > rectSize.x)
 			{
 				var normalizer = rectSize.x / sideRadius.x;
-				radius.x *= normalizer;
-				radius.y *= normalizer;
+				radiusNormalizer.x = math.min(radiusNormalizer.x, normalizer);
+				radiusNormalizer.y = math.min(radiusNormalizer.y, normalizer);
 			}
 
 			if (sideRadius.y > rectSize.y)
 			{
 				var normalizer = rectSize.y / sideRadius.y;
-				radius.y *= normalizer;
-				radius.z *= normalizer;
+				radiusNormalizer.y = math.min(radiusNormalizer.y, normalizer);
+				radiusNormalizer.z = math.min(radiusNormalizer.z, normalizer);
 			}
 
 			if (sideRadius.z > rectSize.x)
 			{
 				var normalizer = rectSize.x / sideRadius.z;
-				radius.z *= normalizer;
-				radius.w *= normalizer;
+				radiusNormalizer.z = math.min(radiusNormalizer.z, normalizer);
+				radiusNormalizer.w = math.min(radiusNormalizer.w, normalizer);
 			}
 
 			if (sideRadius.w > rectSize.y)
 			{
 				var normalizer = rectSize.y / sideRadius.w;
-				radius.w *= normalizer;
-				radius.x *= normalizer;
+				radiusNormalizer.w = math.min(radiusNormalizer.w, normalizer);
+				radiusNormalizer.x = math.min(radiusNormalizer.x, normalizer);
 			}
+
+			radius *= radiusNormalizer;
 
 			return radius;
 		}
