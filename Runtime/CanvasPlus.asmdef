@@ -2,7 +2,11 @@
     "name": "CanvasPlus",
     "rootNamespace": "CanvasPlus",
     "references": [
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "TypeDropdown"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
