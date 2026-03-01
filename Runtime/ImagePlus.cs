@@ -32,7 +32,7 @@ namespace CanvasPlus
 
 			var offsets = new NativeArray<float>(lineLengthEven, Allocator.Temp);
 
-			AddShapeFill(vh, figure, out bool loopsCountOdd);
+			AddShapeFill(vh, figure, offsets, out bool loopsCountOdd);
 
 			foreach (var stroke in figure.strokes)
 			{
@@ -78,31 +78,26 @@ namespace CanvasPlus
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void AddShapeFill(VertexHelper vh, in Figure figure, out bool odd)
+		private void AddShapeFill(VertexHelper vh, in Figure figure, NativeArray<float> offsets, out bool odd)
 		{
-			var shapeLengthFull = figure.shape.Length;
-			var shapeLengthHalf = figure.shape.Length / 2;
-
 			var fillColor = (Color32)color;
-			vh.AddVert(new Vector3(figure.center.x, figure.center.y), fillColor, Mock4, Mock4, Mock4, Mock4, UIVertex.simpleVert.normal, UIVertex.simpleVert.tangent);
-			for (int i = 0; i < shapeLengthFull; i += 2)
-			{
-				var point = figure.shape[i];
-				vh.AddVert(
-					point.GetVertexPosition(),
-					fillColor,
-					Mock4,
-					Mock4,
-					Mock4,
-					Mock4,
-					point.GetVertexNormal(),
-					point.GetVertexTangent()
-				);
-			}
 
-			for (int i = 1; i < shapeLengthHalf; ++i)
-				vh.AddTriangle(0, i, i + 1);
-			vh.AddTriangle(0, shapeLengthHalf, 1);
+			if (fillColor.a > 0)
+			{
+				vh.AddVert(new Vector3(figure.center.x, figure.center.y), fillColor, Mock4, Mock4, Mock4, Mock4, UIVertex.simpleVert.normal, UIVertex.simpleVert.tangent);
+				AddLoopVertices(vh, figure.shape, fillColor, offsets, false);
+
+				var shapeLengthHalf = figure.shape.Length / 2;
+				for (int i = 1; i < shapeLengthHalf; ++i)
+					vh.AddTriangle(0, i, i + 1);
+				vh.AddTriangle(0, shapeLengthHalf, 1);
+			}
+			else if (figure.strokes.Length > 0)
+			{
+				var firstStroke = figure.strokes[0];
+				var firstStrokeColorsSlice = firstStroke.Slice().SliceWithStride<Color32>(StrokePoint.ColorOffset);
+				AddLoopVerticesZeroAlpha(vh, figure.shape, firstStrokeColorsSlice, offsets, false);
+			}
 
 			odd = true;
 		}
@@ -136,7 +131,27 @@ namespace CanvasPlus
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static void AddLoopVertices(VertexHelper vh, in NativeList<ShapePoint> shape, NativeSlice<Color32> colors, NativeArray<float> offsets, bool odd)
+		private static void AddLoopVertices(VertexHelper vh, NativeList<ShapePoint> shape, Color32 color, NativeArray<float> offsets, bool odd)
+		{
+			for (int i = odd ? 1 : 0; i < shape.Length; i += 2)
+			{
+				var shapePoint = shape[i];
+
+				vh.AddVert(
+					shapePoint.GetVertexPosition(offsets[i >> 1]),
+					color,
+					Mock4,
+					Mock4,
+					Mock4,
+					Mock4,
+					shapePoint.GetVertexNormal(),
+					shapePoint.GetVertexTangent()
+				);
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static void AddLoopVertices(VertexHelper vh, NativeList<ShapePoint> shape, NativeSlice<Color32> colors, NativeArray<float> offsets, bool odd)
 		{
 			for (int i = odd ? 1 : 0; i < shape.Length; i += 2)
 			{
@@ -156,7 +171,7 @@ namespace CanvasPlus
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static void AddLoopVerticesZeroAlpha(VertexHelper vh, in NativeList<ShapePoint> shape, NativeSlice<Color32> colors, NativeArray<float> offsets, bool odd)
+		private static void AddLoopVerticesZeroAlpha(VertexHelper vh, NativeList<ShapePoint> shape, NativeSlice<Color32> colors, NativeArray<float> offsets, bool odd)
 		{
 			for (int i = odd ? 1 : 0; i < shape.Length; i += 2)
 			{
