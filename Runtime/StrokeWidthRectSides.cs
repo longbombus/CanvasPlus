@@ -1,14 +1,17 @@
+using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace CanvasPlus
 {
+	[BurstCompile]
 	[System.Serializable]
-	public class RectSidesWidth : IStrokeWidthProvider
+	public class StrokeWidthRectSides : IStrokeWidthProvider
 	{
 		[SerializeField] private float[] width;
 
+		[BurstCompile]
 		public unsafe void Generate(ref Figure figure, int strokeIndex)
 		{
 			float4 sides = new float4(

@@ -1,14 +1,17 @@
+using Unity.Burst;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace CanvasPlus
 {
+	[BurstCompile]
 	[System.Serializable]
-	public class RectSidesColor : IStrokeColorProvider
+	public class StrokeColorRectSides : IStrokeColorProvider
 	{
 		[SerializeField] private Color32[] color;
 
+		[BurstCompile]
 		public unsafe void Generate(ref Figure figure, int strokeIndex)
 		{
 			float4 maxByteValue = new float4(255.999f);
