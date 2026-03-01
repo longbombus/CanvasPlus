@@ -7,11 +7,11 @@ namespace CanvasPlus
 {
 	[BurstCompile]
 	[System.Serializable]
-	public class StrokeColorGradient : IStrokeColorProvider
+	public class StrokeWidthCurve : IStrokeWidthProvider
 	{
 		private const float TauInv = 1f / math.TAU;
 
-		[SerializeField] private Gradient color;
+		[SerializeField] private AnimationCurve width;
 
 		[BurstCompile]
 		public unsafe void Generate(ref Figure figure, int strokeIndex)
@@ -22,7 +22,7 @@ namespace CanvasPlus
 			{
 				var clock = -figure.shape[i].normal;
 				float t = math.atan2(clock.x, clock.y);
-				stroke[i].color = color.Evaluate(math.mad(t, TauInv, 0.5f));
+				stroke[i].width = width.Evaluate(math.mad(t, TauInv, 0.5f));
 			}
 		}
 	}
