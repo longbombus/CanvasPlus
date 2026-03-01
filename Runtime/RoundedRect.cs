@@ -10,25 +10,22 @@ namespace CanvasPlus
 	{
 		[BurstCompile]
 		public override void Generate(
-			NativeList<ShapePoint> line,
-			in float2 center,
-			in float2 size,
+			ref Figure figure,
 			float unitsPerPixel
 		)
 		{
-			var extents = size * .5f;
-			var radius = GetRadius(size);
+			var radius = GetRadius(figure.size);
 
-			GenerateCorner(line, center, new float2(-extents.x, extents.y), radius.x, unitsPerPixel, -math.PIHALF);
-			GenerateCorner(line, center, new float2(extents.x, extents.y), radius.y, unitsPerPixel, 0);
-			GenerateCorner(line, center, new float2(extents.x, -extents.y), radius.z, unitsPerPixel, math.PIHALF);
-			GenerateCorner(line, center, new float2(-extents.x, -extents.y), radius.w, unitsPerPixel, math.PI);
+			GenerateCorner(figure.shape, figure.center, new float2(-figure.extents.x, figure.extents.y), radius.x, unitsPerPixel, -math.PIHALF);
+			GenerateCorner(figure.shape, figure.center, new float2(figure.extents.x, figure.extents.y), radius.y, unitsPerPixel, 0);
+			GenerateCorner(figure.shape, figure.center, new float2(figure.extents.x, -figure.extents.y), radius.z, unitsPerPixel, math.PIHALF);
+			GenerateCorner(figure.shape, figure.center, new float2(-figure.extents.x, -figure.extents.y), radius.w, unitsPerPixel, math.PI);
 		}
 
 		[BurstCompile]
 		private void GenerateCorner(NativeList<ShapePoint> line, float2 rectCenter, float2 rectExtents, float radius, float unitsPerPixel, float beginAngle)
 		{
-			int segmentsCount = (int)(1.125f * math.sqrt(radius / unitsPerPixel) + 1) * 2;
+			int segmentsCount = (int)(math.sqrt(radius / unitsPerPixel) + 1) << 1;
 			int arcSegmentsCount = segmentsCount - 1;
 			float angleRate = math.PIHALF / (arcSegmentsCount - 1);
 			float2 normal = default;

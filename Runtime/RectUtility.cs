@@ -27,7 +27,7 @@ namespace CanvasPlus
 			if (values == null || values.Length == 0)
 				return default;
 
-			return values[(uint)side >> (values.Length << 1)];
+			return values[((uint)side >> (values.Length << 1)) & 3u];
 		}
 
 		public static T DecodeValue<T>(this RectCorner corner, T[] values)

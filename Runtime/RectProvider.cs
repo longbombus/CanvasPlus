@@ -64,6 +64,6 @@ namespace CanvasPlus
 			return radius;
 		}
 
-		public abstract void Generate(NativeList<ShapePoint> shape, in float2 center, in float2 size, float unitsPerPixel);
+		public abstract void Generate(ref Figure figure, float unitsPerPixel);
 	}
 }
