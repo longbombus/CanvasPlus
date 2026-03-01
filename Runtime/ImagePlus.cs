@@ -48,13 +48,23 @@ namespace CanvasPlus
 				AddShapeLoop(vh, figure.shape, strokeColorsSlice, offsets, ref loopsCountOdd);
 			}
 
-			if (m_SoftEdge)
+			if (m_SoftEdge && vh.currentVertCount > 0)
 			{
-				var shapeSlice = figure.shape.AsArray().Slice();
-				var colorSlice = shapeSlice.SliceWithStride<Color32>(ShapePoint.ColorOffset);
+				NativeSlice<Color32> colorSlice;
+
+				if (figure.strokes.Length > 0)
+				{
+					var lastStroke = figure.strokes[figure.strokes.Length - 1];
+					colorSlice = lastStroke.Slice().SliceWithStride<Color32>(StrokePoint.ColorOffset);
+				}
+				else
+				{
+					var shapeSlice = figure.shape.AsArray().Slice();
+					colorSlice = shapeSlice.SliceWithStride<Color32>(ShapePoint.ColorOffset);
+				}
 
 				UpdateOffsets(offsets, unitsPerPixel);
-				AddShapeLoop(vh, figure.shape, colorSlice, offsets, ref loopsCountOdd);
+				AddShapeLoop(vh, figure.shape, colorSlice, offsets, ref loopsCountOdd, true);
 			}
 
 			figure.Dispose();
