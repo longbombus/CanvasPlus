@@ -28,32 +28,32 @@ namespace CanvasPlus
 			int segmentsCount = (int)(math.sqrt(radius / unitsPerPixel) + 1) << 1;
 			int arcSegmentsCount = segmentsCount - 1;
 			float angleRate = math.PIHALF / (arcSegmentsCount - 1);
+			var radius2 = new float2(radius);
+			var circleDirection = -math.chgsign(radius2, rectExtents);
+			var circleCenter = rectCenter + rectExtents + circleDirection;
 			float2 normal = default;
 
 			switch (segmentsCount)
 			{
 				case < 3:
 					math.sincos(beginAngle + math.PIHALF * .5f, out normal.x, out normal.y);
-					line.Add(new ShapePoint(rectCenter + rectExtents, normal));
-					math.sincos(beginAngle + math.PIHALF, out normal.x, out normal.y);
+					line.Add(new ShapePoint(circleCenter, normal));
+					line.Add(new ShapePoint(circleCenter, normal));
 					break;
 
 				default:
 				{
-					var radius2 = new float2(radius);
-					var circleDirection = -math.chgsign(radius2, rectExtents);
-					var circleCenter = rectCenter + rectExtents + circleDirection;
 					for (int i = 0; i < arcSegmentsCount; ++i)
 					{
 						float angle = i * angleRate + beginAngle;
 						math.sincos(angle, out normal.x, out normal.y);
 						line.Add(new ShapePoint(math.mad(normal, radius2, circleCenter), normal));
 					}
+
+					line.Add(new ShapePoint(rectCenter + math.abs(rectExtents) * normal, normal));
 					break;
 				}
 			}
-
-			line.Add(new ShapePoint(rectCenter + math.abs(rectExtents) * normal, normal));
 		}
 	}
 }
