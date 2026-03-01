@@ -14,7 +14,7 @@ namespace CanvasPlus
 			float unitsPerPixel
 		)
 		{
-			var radius = GetRadius(figure.size);
+			var radius = GetRadius(figure.size - unitsPerPixel * 2);
 
 			GenerateCorner(figure.shape, figure.center, new float2(-figure.extents.x, figure.extents.y), radius.x, unitsPerPixel, -math.PIHALF);
 			GenerateCorner(figure.shape, figure.center, new float2(figure.extents.x, figure.extents.y), radius.y, unitsPerPixel, 0);
